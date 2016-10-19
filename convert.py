@@ -1,22 +1,19 @@
 # Convert http://bubb.li spheres to equirectanglar images
 
 import os
+import re
+import sys
 
-bubbli_id = '361964aqy29yeowtwjovxeg'
-directions = ['py', 'ny', 'px', 'nx', 'pz', 'nz']
-filenames = []
-should_mogrify = False
 
-for direction in directions:
-    filename = bubbli_id + '_' + direction + '.jpg'
-    png_filename = bubbli_id + '_' + direction + '.png'
-    filenames.append(filename)
-    if os.path.isfile(png_filename):
-        continue
-    should_mogrify = True
-    os.system('wget https://d39cwcjmzdw2iw.cloudfront.net/' + bubbli_id + '/stitched_' + direction + '.jpg -O ' + filename)
+def convert(bubbli_id):
+    directions = ['py', 'ny', 'px', 'nx', 'pz', 'nz']
+    filenames = []
 
-if should_mogrify:
+    for direction in directions:
+        filename = bubbli_id + '_' + direction + '.jpg'
+        filenames.append(filename)
+        os.system('wget https://d39cwcjmzdw2iw.cloudfront.net/' + bubbli_id + '/stitched_' + direction + '.jpg -O ' + filename)
+
     os.system('mogrify -format png *.jpg')
     os.system('trash *.jpg')
     filename = bubbli_id + '_' + 'py.png'
@@ -28,7 +25,18 @@ if should_mogrify:
     filename = bubbli_id + '_' + 'nz.png'
     os.system('convert ' + filename + ' -rotate 180 ' + filename)
 
-filenames = [filename.replace('jpg', 'png') for filename in filenames]
+    png_filenames = [f.replace('jpg', 'png') for f in filenames]
 
-command = 'cube2sphere --format=png --blender-path=/Applications/blender.app/Contents/MacOS/blender ' + ' '.join(filenames)
-os.system(command)
+    command = 'cube2sphere --format=png --blender-path=/Applications/blender.app/Contents/MacOS/blender ' + ' '.join(png_filenames)
+    os.system(command)
+    os.system('trash {}_*.png'.format(bubbli_id))
+    os.system('convert out0001.png -flop {}.png'.format(bubbli_id))
+    os.system('trash out0001.png')
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print 'usage: python convert.py bubbli_url1 [bubbli_url2 bubbli_url3...]'
+    for bubbli_url in sys.argv[1:]:
+        bubbli_id = re.match(r'http://on.bubb.li/(\w+)\/?', bubbli_url).group(1)
+        convert(bubbli_id)
