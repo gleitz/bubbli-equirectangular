@@ -8,7 +8,7 @@ Usage
 
 *  Install [Blender 2.76](https://www.blender.org/features/past-releases/2-76/)
 *  `pip install cube2sphere`
-*  `brew install imagemagick trash`
+*  `brew install imagemagick trash wget`
 *  `python convert.py bubbli_url1 [bubbli_url2 bubbli_url3...]`
 
 
