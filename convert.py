@@ -27,7 +27,7 @@ def convert(bubbli_id):
 
     png_filenames = [f.replace('jpg', 'png') for f in filenames]
 
-    command = 'cube2sphere --format=png --blender-path=/Applications/blender.app/Contents/MacOS/blender ' + ' '.join(png_filenames)
+    command = 'cube2sphere --resolution 4096 2048 --format=png --blender-path=/Applications/blender.app/Contents/MacOS/blender ' + ' '.join(png_filenames)
     os.system(command)
     os.system('trash {}_*.png'.format(bubbli_id))
     os.system('convert out0001.png -flop {}.png'.format(bubbli_id))
